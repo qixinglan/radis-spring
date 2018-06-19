@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE beans PUBLIC "-//SPRING/DTD BEAN/EN"
+ "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-lazy-init="false">
+	<description>REDIS缓存配置</description>
+
+	<!-- JEDIS SHARD 池配置 -->
+	<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
+		<constructor-arg index="0" ref="jedisPoolConfig" />
+		<constructor-arg index="1">
+			<list>
+				<ref bean="jedis.shardInfo0" />
+				<!-- <ref bean="jedis.shardInfo1" />
+				<ref bean="jedis.shardInfo2" /> -->
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<!-- JEDIS连接池配置 -->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		 <!-- 最大连接数 -->
+        <property name="maxTotal" value="30" />
+        <!-- 最大空闲连接数 -->
+        <property name="maxIdle" value="10" />
+        <!-- 每次释放连接的最大数目 -->
+        <property name="numTestsPerEvictionRun" value="1024" />
+        <!-- 释放连接的扫描间隔（毫秒） -->
+        <property name="timeBetweenEvictionRunsMillis" value="30000" />
+        <!-- 连接最小空闲时间 -->
+        <property name="minEvictableIdleTimeMillis" value="1800000" />
+        <!-- 连接空闲多久后释放, 当空闲时间>该值 且 空闲连接>最大空闲连接数 时直接释放 -->
+        <property name="softMinEvictableIdleTimeMillis" value="10000" />
+        <!-- 获取连接时的最大等待毫秒数,小于零:阻塞不确定的时间,默认-1 -->
+        <property name="maxWaitMillis" value="1500" />
+        <!-- 在获取连接的时候检查有效性, 默认false -->
+        <property name="testOnBorrow" value="true" />
+        <!-- 在空闲时检查有效性, 默认false -->
+        <property name="testWhileIdle" value="true" />
+        <!-- 连接耗尽时是否阻塞, false报异常,ture阻塞直到超时, 默认true -->
+        <property name="blockWhenExhausted" value="false" />
+	</bean>
+
+	<!-- JEDIS SHARD信息配置[START]		在此添加REDIS集群配置 -->
+	<bean id="jedis.shardInfo0" class="redis.clients.jedis.JedisShardInfo">
+		<constructor-arg index="0" value="127.0.0.1" />
+		  <constructor-arg index="1" value="6379" />
+		<property name="password" value="1234"></property>
+		
+	</bean>
+	<!-- <bean id="jedis.shardInfo1" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="192.168.1.2" />
+        <constructor-arg index="1" value="6379" />
+        <property name="password" value="${redisCachePwd}"></property>
+    </bean>
+    <bean id="jedis.shardInfo2" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="192.168.1.3" />
+        <constructor-arg index="1" value="6379" />
+        <property name="password" value="${redisCachePwd}"></property>
+    </bean> -->
+	
+	<!-- JEDIS SHARD信息配置 [END] -->
+</beans>
